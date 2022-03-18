@@ -11,3 +11,58 @@
 5.  Shortly after the appearance of WebAssembly another paper proposed a mechanized specification of the language using Isabelle. The paper can be consulted here: https://www.cl.cam.ac.uk/~caw77/papers/mechanising-and-verifying-the-webassembly-specification.pdf. This mechanized specification complements the first formalization attempt from the paper. According to the author of this second paper, what are the main advantages of the mechanized specification? Did it help improving the original formal specification of the language? What other artifacts were derived from this mechanized specification? How did the author verify the specification? Does this new specification removes the need for testing?
 
 ## Answers
+
+1. Source : https://www.theatlantic.com/technology/archive/2014/12/how-gangnam-style-broke-youtube/383389/
+
+   Parlons d'un bug logiciel qui a eu lieu en 2014 sur la plateforme Youtube relative à une vidéo intitulée "Gangnam Style".
+
+   ### Description du bug
+
+   Le bug est très simple. À l'époque, Youtube stockait le nombre de vues par vidéo dans des entiers de 32 bits, ce qui limitait le nombre de vues à environ 2.15 milliards. Or, ce nombre a été dépassé par "Gangnam style" en 2014, environ 2 ans après sa sortie.  
+
+   Pour résoudre le problème, Youtube a du stocker le compteur de vues dans du 64 bits.
+
+   ### Tests pour éviter le bug ?
+
+   Il aurait été difficile de détecter ce problème via des tests car il ne s'agit pas d'un bug local. Les concepteurs n'ont simplement pas envisagé la possibilité qu'une vidéo puisse excéder les 2 147 483 647 vues.
+
+2. Prenons ce [bug](https://issues.apache.org/jira/projects/COLLECTIONS/issues/COLLECTIONS-769?filter=doneissues). Il s'agit d'une classe de test qui vérifie si un MultipleValuedMap contient les bonnes valeurs. Le problème est que cette vérification est codée en dure de la manière suivante :
+
+   ```java
+   assertEquals("{one=[uno, un], two=[dos, deux], three=[tres, trois]}", map.toString());
+   ```
+
+   Il s'agit d'un bug local. En effet, ce test vérifie le contenu de la variable mais aussi son ordonnancement. Or, dans un MultipleValuedMap, il n'y a pas d'ordre particulier. Le problème a été résolu en remplaçant le test avec l'assertion suivante :
+
+   ```java
+   this.assertMapContainsAllValues(map);
+   ```
+
+3. - Expériences menées
+     - Pour tester sa tolérance aux pannes, Netflix utilise le **chaos engineering** . Cette méthode consiste à simuler des pannes de différents type et de voir comment l'application réagit. D'après le papier, on retrouve notamment 5 types d'expérience
+       - Couper une instance d'une machine virtuelle
+       - L'injection de latence dans des requêtes entre deux services
+       - Faire échouer des requêtes entre deux services
+       - Faire planter un service
+       - Rendre indisponible le service Amazon de la zone
+     - Les expérience se déroulent de la manière suivante
+       - On réalise l'expérience sur deux groupes : le groupe de contrôle et le groupe expérimental
+       - On définit un "état stable" du système selon différentes variables (voir le point suivante) observées.
+       - On observe s'il y a une différente d'état stable entre les deux groupes.
+
+   - Variables observées
+     - Pour vérifier si ces pannes ont un impact sur les utilisateurs, plusieurs variables sont observées. Le plus important est de s'assurer que les utilisateurs sont en mesure de regarder le contenu qu'ils désirent. Pour cela, Netflix observe le nombre d'utilisateurs qui regardent une vidéo chaque seconde. Cette variable est appelée **SPS**. Ainsi, si le SPS change brutalement, c'est qu'il y a un problème dans le système.
+     - Une autre variable observée est le nombre de nouveaux comptes enregistré chaque seconde. En effet, si le système est indisponible, il n'est plus possible de créer de nouveaux comptes
+   - Résultats obtenus
+     - Les résultats permettent soit de gagner en confiance dans la capacité du système à maintenant un état stable, soit à détecter une faiblesse dans le système. 
+   - Autres exemples d'entreprises
+     - Netflix n'est pas la seule entreprise à faire du chaos engineering. On peut penserà d'autres plateforme de streaming telles qu'Amazon prime. Facebook utilise aussi du chaos engineering en simulant des pannes massives de data centers. Dans le cas de Facebook, on peut supposer qu'ils observent des variables telles que le nombre d'utilisateurs connecté par secondes, ou encore le nombre d'inscriptions par seconde.
+
+4. - Avantages d'avoir une spécification formelle pour WebAssembly
+     - Avoir un code mathématiquement prouvé (preuve par construction). En effet, WebAssembly fournit un *structured control flow* ce qui assure par construction que le flot de contrôle ne peut par exemple pas former des boucles irréductibles.
+     - Avoir un code rapide, compact, portable et sécurisé 
+   - Est-il encore utile de tester ?
+     - Évidemment. Avoir un code valide ne signifie pas qu'il ne doit pas être testé. Notamment, on aura toujours besoin de tests de vérification. Par exemple, pour vérifier qu'une exception est bien levé dans un contexte particulier.
+
+5. - Principaux avantages
+     - Selon l'auteur du papier, le principal avantage est la préservation du principe appellé *eyeball closeness*. Ce principe soulève qu'il doit y avoir une correspondance textuelle ligne à ligne entre la spécification officielle et la mécanisation. L'objectif derrière ce principe est qu'une personne à l'aise avec la spécification officielle devrait être capable de lire la mécanisation facilement
