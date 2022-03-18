@@ -52,11 +52,11 @@
 
    - Variables observées
      - Pour vérifier si ces pannes ont un impact sur les utilisateurs, plusieurs variables sont observées. Le plus important est de s'assurer que les utilisateurs sont en mesure de regarder le contenu qu'ils désirent. Pour cela, Netflix observe le nombre d'utilisateurs qui regardent une vidéo chaque seconde. Cette variable est appelée **SPS**. Ainsi, si le SPS change brutalement, c'est qu'il y a un problème dans le système.
-     - Une autre variable observée est le nombre de nouveaux comptes enregistré chaque seconde. En effet, si le système est indisponible, il n'est plus possible de créer de nouveaux comptes
+     - Une autre variable observée est le nombre de nouveaux comptes enregistrés chaque seconde. En effet, si le système est indisponible, il n'est plus possible de créer de nouveaux comptes.
    - Résultats obtenus
      - Les résultats permettent soit de gagner en confiance dans la capacité du système à maintenant un état stable, soit à détecter une faiblesse dans le système. 
    - Autres exemples d'entreprises
-     - Netflix n'est pas la seule entreprise à faire du chaos engineering. On peut penserà d'autres plateforme de streaming telles qu'Amazon prime. Facebook utilise aussi du chaos engineering en simulant des pannes massives de data centers. Dans le cas de Facebook, on peut supposer qu'ils observent des variables telles que le nombre d'utilisateurs connecté par secondes, ou encore le nombre d'inscriptions par seconde.
+     - Netflix n'est pas la seule entreprise à faire du chaos engineering. On peut penser à d'autres plateforme de streaming telles qu'Amazon prime. Facebook utilise aussi du chaos engineering en simulant des pannes massives de data centers. Dans le cas de Facebook, on peut supposer qu'ils observent des variables telles que le nombre d'utilisateurs connectés par seconde, ou encore le nombre d'inscriptions par seconde.
 
 4. - Avantages d'avoir une spécification formelle pour WebAssembly
      - Avoir un code mathématiquement prouvé (preuve par construction). En effet, WebAssembly fournit un *structured control flow* ce qui assure par construction que le flot de contrôle ne peut par exemple pas former des boucles irréductibles.
